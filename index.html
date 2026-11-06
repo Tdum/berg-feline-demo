@@ -1,0 +1,973 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Démo configurateur La Féline · bitmaker</title>
+<meta name="description" content="Démo de configurateur réalisée par bitmaker pour La Féline de Berg Guitares. Ce n’est pas un site officiel.">
+<meta name="robots" content="noindex, nofollow">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Syne:wght@800&display=swap" rel="stylesheet">
+<link rel="preload" as="image" href="https://www.berg-guitares.com/wp-content/uploads/2022/09/feline-vert-oxygen_pgw_WEB.jpg">
+<style>
+:root{
+  --green:#1E3936;
+  --green-soft:#2c4c48;
+  --ochre:#CD9246;
+  --ochre-deep:#a8702b;
+  --cream:#F1EAE0;
+  --paper:#f8f4ee;
+  --brick:#8F402A;
+  --ink:#1E3936;
+  --muted:#5f6c68;
+  --line:rgba(30,57,54,.14);
+  --stage-0:#3b4044;
+  --stage-1:#23282b;
+  --stage-2:#14181a;
+  --display:'Fraunces', Georgia, 'Times New Roman', serif;
+  --ui:'DM Sans', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --strip-h:34px;
+  --head-h:64px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--cream);
+  color:var(--ink);
+  font-family:var(--ui);
+  font-size:15px;
+  line-height:1.45;
+  -webkit-font-smoothing:antialiased;
+}
+button{font:inherit;color:inherit}
+img{display:block}
+
+/* ---------- Bandeau prototype ---------- */
+.strip{
+  height:var(--strip-h);
+  display:flex;align-items:center;justify-content:center;gap:14px;
+  padding:0 16px;
+  background:var(--green);color:var(--cream);
+  font-size:12px;letter-spacing:.02em;
+  white-space:nowrap;overflow:hidden;
+}
+.strip span{overflow:hidden;text-overflow:ellipsis}
+.strip button{
+  flex:none;background:none;border:0;padding:0;cursor:pointer;
+  color:var(--ochre);text-decoration:underline;text-underline-offset:3px;
+}
+
+/* ---------- En-tête ---------- */
+.top{
+  height:var(--head-h);
+  display:flex;align-items:center;gap:18px;
+  padding:0 28px;
+  border-bottom:1px solid var(--line);
+  background:var(--cream);
+}
+.brand{font:800 18px/1 "Syne",sans-serif;letter-spacing:-.02em;color:var(--ink,#1a1612);text-decoration:none}
+.brand span{color:#c45a3b}
+.crumb{
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
+  padding-left:18px;border-left:1px solid var(--line);
+}
+.lang{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;padding:3px}
+.lang button{
+  border:0;background:none;cursor:pointer;
+  font-size:12px;font-weight:600;letter-spacing:.06em;
+  padding:5px 11px;border-radius:999px;color:var(--muted);
+}
+.lang button[aria-pressed="true"]{background:var(--green);color:var(--cream)}
+
+/* ---------- Mise en page ---------- */
+.app{
+  display:grid;
+  grid-template-columns:minmax(0,1.3fr) minmax(400px,.9fr);
+  height:calc(100dvh - var(--strip-h) - var(--head-h));
+}
+
+/* ---------- Scène ---------- */
+.stage{
+  position:relative;
+  height:100%;
+  background:radial-gradient(ellipse 75% 62% at 50% 46%, var(--stage-0) 0%, var(--stage-1) 55%, var(--stage-2) 100%);
+  overflow:hidden;
+  isolation:isolate;
+}
+.frame{
+  position:absolute;inset:18px 18px 76px;
+  display:grid;place-items:center;
+  container-type:size;
+  --r:.636; /* 954 / 1500 */
+}
+.frame.is-detail{--r:1.0685} /* 780 / 730 */
+/* En vue détail, le fond gris de la photo prend plus de place : la scène s'éclaircit pour s'y fondre */
+.stage::before{
+  content:"";position:absolute;inset:0;z-index:-1;
+  background:radial-gradient(ellipse 58% 66% at 50% 44%, #7d8083 0%, #5f6367 42%, #363b3e 78%, #1c2023 100%);
+  opacity:0;transition:opacity .45s ease;
+}
+.stage.is-detail::before{opacity:1}
+/* La zone .art épouse le ratio de la photo pour que le fondu s'applique à ses vrais bords */
+.art{
+  position:relative;
+  width:min(100cqw, calc(100cqh * var(--r)));
+  height:min(100cqh, calc(100cqw / var(--r)));
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 22%,#000 78%,transparent),linear-gradient(to bottom,transparent,#000 2.5%,#000 96%,transparent);
+  -webkit-mask-composite:source-in;
+  mask-image:linear-gradient(to right,transparent,#000 22%,#000 78%,transparent),linear-gradient(to bottom,transparent,#000 2.5%,#000 96%,transparent);
+  mask-composite:intersect;
+}
+.frame.is-detail .art{
+  -webkit-mask-image:linear-gradient(to right,transparent,#000 17%,#000 83%,transparent),linear-gradient(to bottom,transparent,#000 9%,#000 96%,transparent);
+  mask-image:linear-gradient(to right,transparent,#000 17%,#000 83%,transparent),linear-gradient(to bottom,transparent,#000 9%,#000 96%,transparent);
+}
+.art canvas{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:contain;
+  opacity:0;transition:opacity .38s ease, filter .38s ease;
+}
+.frame canvas.on{opacity:1}
+.frame.is-missing canvas{filter:grayscale(1) brightness(.42) blur(1.5px)}
+
+.missing{
+  position:absolute;inset:0;display:grid;place-items:center;
+  pointer-events:none;
+}
+.missing[hidden]{display:none}
+.missing div{
+  max-width:300px;text-align:center;color:var(--cream);
+  padding:22px 24px;border-radius:16px;
+  background:rgba(20,24,26,.55);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  border:1px solid rgba(241,234,224,.16);
+}
+.missing strong{display:block;font-family:var(--display);font-weight:500;font-size:22px;margin-bottom:6px}
+.missing p{margin:0;font-size:14px;color:rgba(241,234,224,.78)}
+
+.loader{
+  position:absolute;top:22px;right:22px;width:22px;height:22px;border-radius:50%;
+  border:2px solid rgba(241,234,224,.2);border-top-color:var(--ochre);
+  animation:spin .8s linear infinite;
+}
+.loader[hidden]{display:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.tags{position:absolute;top:20px;left:20px;display:flex;flex-direction:column;align-items:flex-start;gap:6px}
+.tag{
+  font-size:11px;letter-spacing:.04em;color:var(--cream);
+  padding:4px 10px;border-radius:999px;
+  background:rgba(20,24,26,.5);border:1px solid rgba(241,234,224,.18);
+  backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px);
+}
+.tag[hidden]{display:none}
+.tag::before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--ochre);margin-right:7px;vertical-align:1px}
+
+.stagebar{
+  position:absolute;left:0;right:0;bottom:0;height:76px;
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:0 28px;
+  color:var(--cream);
+}
+.caption{min-width:0}
+.caption .model{font-family:var(--display);font-style:italic;font-size:24px;line-height:1.1}
+.caption .color{display:block;font-size:12px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,234,224,.66);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.views{display:flex;gap:4px;padding:4px;border-radius:999px;background:rgba(241,234,224,.08);border:1px solid rgba(241,234,224,.14);flex:none}
+.views button{
+  border:0;background:none;cursor:pointer;color:rgba(241,234,224,.72);
+  font-size:12px;font-weight:500;padding:7px 13px;border-radius:999px;
+}
+.views button[aria-pressed="true"]{background:var(--cream);color:var(--green)}
+
+/* ---------- Panneau d'options ---------- */
+.panel{display:flex;flex-direction:column;min-width:0;height:100%;overflow-y:auto;container-type:inline-size}
+.panel-inner{padding:34px clamp(20px,3.2vw,44px) 24px;max-width:600px;width:100%}
+.eyebrow{margin:0 0 6px;font-size:11px;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--ochre-deep)}
+h1{margin:0;font-family:var(--display);font-weight:600;font-size:46px;line-height:1;letter-spacing:-.01em}
+.lede{margin:12px 0 6px;color:var(--muted);max-width:44ch}
+
+.step{border:0;margin:0;padding:22px 0 24px;border-top:1px solid var(--line);min-width:0}
+.step:first-of-type{margin-top:22px}
+.step legend{
+  float:left;width:100%;
+  display:flex;align-items:baseline;gap:10px;
+  padding:0;margin:0 0 14px;
+}
+.step legend + *{clear:both}
+.num{font-family:var(--display);font-style:italic;font-size:15px;color:var(--ochre-deep);min-width:22px}
+.label{font-size:12px;font-weight:600;letter-spacing:.14em;text-transform:uppercase}
+.val{margin-left:auto;font-size:14px;color:var(--muted);text-align:right}
+.sublabel{font-size:12px;color:var(--muted);margin:16px 0 8px}
+.sublabel:first-of-type{margin-top:0}
+.note{margin:12px 0 0;font-size:12.5px;color:var(--muted);display:flex;gap:7px}
+.note::before{content:"";flex:none;width:5px;height:5px;margin-top:7px;border-radius:50%;background:var(--ochre)}
+
+.opt{position:relative;cursor:pointer}
+.opt input{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none}
+
+/* Pastilles couleur */
+.swatches{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:12px 10px}
+.swatch{display:grid;place-items:center}
+.swatch .face{
+  width:40px;height:40px;border-radius:50%;
+  background:radial-gradient(circle at 32% 28%,rgba(255,255,255,.55),rgba(255,255,255,0) 44%),var(--c);
+  box-shadow:inset 0 -3px 7px rgba(0,0,0,.28),0 1px 2px rgba(30,57,54,.25);
+  transition:transform .15s ease;
+  position:relative;
+}
+.swatch:hover .face{transform:scale(1.07)}
+.swatch input:checked + .face{outline:2px solid var(--ochre);outline-offset:3px}
+.swatch input:focus-visible + .face{outline:2px solid var(--green);outline-offset:3px}
+.swatch.nophoto .face::after{
+  content:"";position:absolute;right:-2px;top:-2px;width:11px;height:11px;border-radius:50%;
+  background:var(--cream);border:2px dashed var(--muted);
+}
+
+/* Cartes illustrées */
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.card .face{
+  display:flex;align-items:center;gap:12px;
+  padding:10px;border-radius:12px;
+  border:1px solid var(--line);background:rgba(248,244,238,.5);
+  transition:border-color .15s ease, background .15s ease;
+  min-height:72px;
+}
+.card:hover .face{border-color:rgba(30,57,54,.32)}
+.card input:checked + .face{border-color:var(--ochre);background:var(--paper);box-shadow:0 0 0 1px var(--ochre)}
+.card input:focus-visible + .face{outline:2px solid var(--green);outline-offset:2px}
+.thumb{
+  flex:none;width:52px;height:52px;border-radius:9px;overflow:hidden;
+  background:#d9d2c6 center/cover no-repeat;
+}
+.thumb.placeholder{
+  display:grid;place-items:center;
+  background:repeating-linear-gradient(135deg,rgba(30,57,54,.07) 0 6px,transparent 6px 12px),var(--cream);
+  border:1px dashed rgba(30,57,54,.3);
+  font-size:10px;line-height:1.1;text-align:center;color:var(--muted);padding:4px;
+}
+.card .txt{min-width:0}
+.card .name{display:block;font-weight:500;line-height:1.25}
+.card .delta{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+
+/* Puces micros */
+.chips{display:flex;flex-wrap:wrap;gap:8px}
+.chip .face{
+  display:inline-flex;align-items:baseline;gap:7px;
+  padding:8px 13px;border-radius:999px;
+  border:1px solid var(--line);background:rgba(248,244,238,.5);
+  transition:background .15s ease,border-color .15s ease,color .15s ease;
+  font-size:14px;
+}
+.chip:hover .face{border-color:rgba(30,57,54,.32)}
+.chip .delta{font-size:12px;color:var(--muted)}
+.chip input:checked + .face{background:var(--green);border-color:var(--green);color:var(--cream)}
+.chip input:checked + .face .delta{color:rgba(241,234,224,.7)}
+.chip input:focus-visible + .face{outline:2px solid var(--ochre);outline-offset:2px}
+
+/* Orientation */
+.segment{display:grid;grid-template-columns:1fr 1fr;border:1px solid var(--line);border-radius:12px;padding:4px;gap:4px}
+.segment .face{display:block;text-align:center;padding:9px 10px;border-radius:9px;transition:background .15s ease}
+.segment input:checked + .face{background:var(--green);color:var(--cream)}
+.segment input:focus-visible + .face{outline:2px solid var(--ochre);outline-offset:1px}
+
+/* Récapitulatif */
+.summary{margin:4px 0 0;padding:18px 20px;border-radius:14px;background:var(--paper);border:1px solid var(--line)}
+.summary h2{margin:0 0 10px;font-family:var(--display);font-weight:500;font-style:italic;font-size:20px}
+.summary dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:7px 16px;font-size:14px}
+.summary dt{color:var(--muted)}
+.summary dd{margin:0;text-align:right}
+.summary dd small{display:block;color:var(--muted);font-size:12px}
+.fineprint{margin:14px 0 0;padding-top:12px;border-top:1px solid var(--line);font-size:12px;color:var(--muted)}
+
+/* Barre d'achat */
+.buybar{
+  position:sticky;bottom:0;margin-top:auto;
+  display:flex;align-items:center;gap:12px;
+  padding:14px clamp(20px,3.2vw,44px) calc(14px + env(safe-area-inset-bottom));
+  background:rgba(241,234,224,.94);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  border-top:1px solid var(--line);
+}
+.total{margin-right:auto;flex:none}
+.total .lbl{display:block;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.total output{display:block;white-space:nowrap;font-family:var(--display);font-weight:600;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.btn{
+  text-decoration:none;display:inline-flex;align-items:center;gap:6px;
+  border:1px solid var(--green);background:none;cursor:pointer;
+  padding:12px 18px;border-radius:999px;font-weight:600;font-size:14px;white-space:nowrap;
+}
+.btn:hover{background:rgba(30,57,54,.06)}
+.btn.primary{background:var(--ochre);border-color:var(--ochre);color:#1b1408}
+.btn.primary:hover{background:#d8a056}
+.btn:focus-visible{outline:2px solid var(--green);outline-offset:2px}
+@container (max-width:470px){
+  .buybar{gap:8px}
+  .total output{font-size:24px}
+  .btn{padding:10px 13px;font-size:13.5px}
+}
+
+/* Toast */
+.toast{
+  position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);
+  max-width:min(520px,calc(100vw - 32px));
+  display:flex;align-items:center;gap:14px;
+  padding:12px 16px;border-radius:12px;
+  background:var(--green);color:var(--cream);font-size:14px;
+  box-shadow:0 12px 30px rgba(20,24,26,.28);
+  opacity:0;pointer-events:none;transition:opacity .2s ease,transform .2s ease;z-index:20;
+}
+.toast.show{opacity:1;transform:translate(-50%,0);pointer-events:auto}
+.toast a{color:var(--ochre);white-space:nowrap}
+
+/* Dialogue « À propos » */
+dialog{
+  width:min(560px,calc(100vw - 32px));
+  border:0;border-radius:18px;padding:30px 30px 24px;
+  background:var(--cream);color:var(--ink);
+  box-shadow:0 24px 60px rgba(20,24,26,.35);
+}
+dialog::backdrop{background:rgba(20,24,26,.5)}
+dialog h2{margin:0 0 14px;font-family:var(--display);font-weight:600;font-size:26px}
+dialog ul{margin:0;padding:0;list-style:none;display:grid;gap:12px}
+dialog li{display:grid;grid-template-columns:22px 1fr;gap:6px;font-size:14.5px}
+dialog li b{font-family:var(--display);font-style:italic;font-weight:500;color:var(--ochre-deep)}
+dialog .fine{margin:18px 0 0;font-size:12px;color:var(--muted)}
+dialog form{margin:18px 0 0;display:flex;justify-content:flex-end}
+
+/* ---------- Mobile ---------- */
+@media (max-width:900px){
+  :root{--head-h:56px}
+  .strip{justify-content:space-between}
+  .top{padding:0 16px;gap:12px}
+  .brand{font-size:16px}
+  .crumb{padding-left:12px}
+  .app{display:block;height:auto}
+  .stage{position:sticky;top:0;height:46svh;z-index:5}
+  .frame{inset:10px 10px 58px}
+  .stagebar{height:58px;padding:0 16px}
+  .caption .model{font-size:19px}
+  .caption .color{font-size:11px}
+  .views button{padding:6px 10px;font-size:11.5px}
+  .tags{top:12px;left:12px}
+  .panel-inner{padding:24px 16px 16px}
+  h1{font-size:36px}
+  .buybar{position:fixed;left:0;right:0;bottom:0;padding:12px 16px calc(12px + env(safe-area-inset-bottom));z-index:10}
+  .panel{height:auto;overflow:visible;padding-bottom:96px}
+  .total output{font-size:24px}
+  .btn{padding:11px 14px}
+}
+@media (max-width:420px){
+  .crumb{display:none}
+  .cards{grid-template-columns:1fr}
+  #shareBtn .t{display:none}
+}
+@media (prefers-reduced-motion:reduce){
+  *{transition:none!important;animation:none!important}
+}
+</style>
+</head>
+<body>
+
+<div class="strip">
+  <span data-i18n="strip">Démo bitmaker · Site non officiel</span>
+  <button type="button" id="aboutBtn" data-i18n="aboutBtn">À propos de cette démo</button>
+</div>
+
+<header class="top">
+  <a class="brand" href="https://bitmaker.fr" target="_blank" rel="noopener">bitmaker<span>_</span></a>
+  <span class="crumb" data-i18n="crumb">Démo pour Berg Guitares</span>
+  <div class="lang" role="group" aria-label="Langue / Language">
+    <button type="button" data-lang="fr" aria-pressed="true">FR</button>
+    <button type="button" data-lang="en" aria-pressed="false">EN</button>
+  </div>
+</header>
+
+<main class="app">
+  <section class="stage" aria-labelledby="capModel">
+    <div class="frame" id="frame">
+      <div class="art">
+        <canvas id="cvA" role="img"></canvas>
+        <canvas id="cvB" role="img"></canvas>
+      </div>
+      <div class="missing" id="missing" hidden>
+        <div><strong data-i18n="missingTitle">Pas encore de photo</strong><p data-i18n="missingText"></p></div>
+      </div>
+      <div class="loader" id="loader" hidden></div>
+    </div>
+    <div class="tags">
+      <span class="tag" id="tagComp" hidden data-i18n="tagComp">Composition par calques</span>
+      <span class="tag" id="tagMirror" hidden data-i18n="tagMirror">Aperçu miroir</span>
+      <span class="tag" id="tagVibrato" hidden data-i18n="tagVibrato">Vibrato non représenté</span>
+    </div>
+    <div class="stagebar">
+      <div class="caption">
+        <span class="model" id="capModel">La Féline</span>
+        <span class="color" id="capColor"></span>
+      </div>
+      <div class="views" role="group" aria-label="Vue">
+        <button type="button" data-view="full" aria-pressed="true" data-i18n="viewFull">Guitare entière</button>
+        <button type="button" data-view="detail" aria-pressed="false" data-i18n="viewDetail">Détail</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel">
+    <div class="panel-inner">
+      <p class="eyebrow" data-i18n="eyebrow">Naturally Rock · Fabriquée en France</p>
+      <h1>La Féline</h1>
+      <p class="lede" data-i18n="lede"></p>
+
+      <form id="cfg" autocomplete="off">
+        <fieldset class="step">
+          <legend><span class="num">01</span><span class="label" data-i18n="color">Couleur</span><span class="val" id="valColor"></span></legend>
+          <div class="swatches" id="optColor"></div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend><span class="num">02</span><span class="label" data-i18n="pickguard">Pickguard</span><span class="val" id="valPg"></span></legend>
+          <div class="cards" id="optPg"></div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend><span class="num">03</span><span class="label" data-i18n="pickups">Micros</span><span class="val" id="valPu"></span></legend>
+          <div>
+            <p class="sublabel" data-i18n="neck">Micro manche</p>
+            <div class="chips" id="optNeck"></div>
+            <p class="sublabel" data-i18n="bridge">Micro chevalet</p>
+            <div class="chips" id="optBridge"></div>
+            <p class="note" data-i18n="puNote"></p>
+          </div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend><span class="num">04</span><span class="label" data-i18n="hardware">Accastillage</span><span class="val" id="valHw"></span></legend>
+          <div class="cards" id="optHw"></div>
+        </fieldset>
+
+        <fieldset class="step">
+          <legend><span class="num">05</span><span class="label" data-i18n="hand">Orientation</span><span class="val" id="valHand"></span></legend>
+          <div class="segment" id="optHand"></div>
+        </fieldset>
+      </form>
+
+      <section class="summary" aria-live="polite">
+        <h2 data-i18n="summary">Votre Féline</h2>
+        <dl id="summary"></dl>
+        <p class="fineprint" data-i18n="priceNote">Prix repris de la boutique en ligne</p>
+      </section>
+    </div>
+
+    <div class="buybar">
+      <div class="total">
+        <span class="lbl" data-i18n="total">Total</span>
+        <output id="price" for="cfg">2 880 €</output>
+      </div>
+      <button type="button" class="btn" id="shareBtn"><span class="t" data-i18n="share">Partager</span><span aria-hidden="true"> ↗</span></button>
+      <a class="btn primary" id="orderBtn" href="https://www.berg-guitares.com/boutique/la-feline/" target="_blank" rel="noopener" data-i18n="order">Voir la boutique ↗</a>
+    </div>
+  </section>
+</main>
+
+<dialog id="about" aria-labelledby="aboutTitle">
+  <h2 id="aboutTitle" data-i18n="aboutTitle">À propos de ce prototype</h2>
+  <ul id="aboutList"></ul>
+  <p class="fine" data-i18n="aboutFine"></p>
+  <form method="dialog"><button class="btn" data-i18n="close">Fermer</button></form>
+</dialog>
+
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+  const IMG = 'https://www.berg-guitares.com/wp-content/uploads/2022/09/';
+  const W = 954, H = 1500;
+  const BASE_PRICE = 2880;
+
+  // Cadrages en pixels de la photo d'origine (954 × 1500)
+  const VIEWS = {
+    full:   { x: 0,   y: 0,   w: 954, h: 1500 },
+    detail: { x: 87,  y: 770, w: 780, h: 730 },
+  };
+  // Zones recomposées quand on passe de 1 à 2 micros : micro manche + sélecteur 3 positions
+  const PATCHES = [
+    { x: 408, y: 976,  w: 154, h: 72, r: 14 },
+    { x: 582, y: 1136, w: 48,  h: 50, r: 14 },
+  ];
+  const FEATHER = 16;  // shadowBlur ≈ 2 × sigma
+  const SHIFT = 2;     // la série « 2 micros » est décalée de 2 px vers la gauche autour du pickguard
+  // Logo de la tête de guitare : contour symétrique, exprimé le long de sa ligne de base inclinée
+  const LOGO = {
+    x: 504.1, y: 65, angle: -23 * Math.PI / 180, feather: 3,
+    shift: 6.2,  // la série « 2 micros » est décalée de 6 px vers la gauche à hauteur de la tête
+    outline: [[-50, -22], [50, -22], [50, 6], [38, 22], [-38, 22], [-50, 6]],
+  };
+
+  // Deux séries de photos : 1 = un seul micro (chevalet), 2 = deux micros + sélecteur
+  const one = slug => ({ 1: { w: `${slug}_pgw`, k: `${slug}_pgbk` } });
+  const two = slug => ({ 2: { w: `${slug}_2mic_pgw`, k: `${slug}_2mic_pgbk` } });
+  const DONORS = {
+    1: { w: 'blanc-voodoo_pgw', k: 'blanc-voodoo_pgbk' },
+    2: { w: 'bleu-sonic_2mic_pgw', k: 'bleu-sonic_2mic_pgbk' },
+  };
+
+  const COLORS = [
+    { id: 'bleu-sonic',       name: 'Bleu Sonic',       hex: '#79b6b6', photos: two('bleu-sonic') },
+    { id: 'vert-oxygene',     name: 'Vert Oxygène',     hex: '#36612a', photos: one('vert-oxygen') },
+    { id: 'blanc-voodoo',     name: 'Blanc Voodoo',     hex: '#cfc3a0', photos: one('blanc-voodoo') },
+    { id: 'bleu-mayol',       name: 'Bleu Mayol',       hex: '#0d2849', photos: one('bleu-mayol') },
+    { id: 'rouge-marylin',    name: 'Rouge Marylin',    hex: '#640709', photos: one('rouge-marilyn') },
+    { id: 'orange-mecanique', name: 'Orange Mécanique', hex: '#c65a10', photos: one('orange-mecanique') },
+    { id: 'noir-espace',      name: 'Noir Espace',      hex: '#1b1b1b', photos: one('noir-espace') },
+    { id: 'fiesta-red',       name: 'Fiesta Red',       hex: '#bb362f', photos: one('fiesta-red') },
+    { id: 'seafoam-green',    name: 'Seafoam Green',    hex: '#519872', photos: two('seafoam-green') },
+    { id: 'naturelle-ambree', name: 'Naturelle Ambrée', hex: '#c48a4f', photos: null },
+    { id: 'deep-purple',      name: 'Deep Purple',      hex: '#552843', photos: { ...two('deep-purple'), 1: { w: 'prune_pgw' } } },
+  ];
+  const PICKGUARDS = [
+    { id: 'w', fr: 'Blanc', en: 'White', img: IMG + 'plaque_blanche-e1672665981809.png' },
+    { id: 'k', fr: 'Noir',  en: 'Black', img: IMG + 'plaque_noire-e1672666006193.png' },
+  ];
+  const NECK = [
+    { id: 'aucun',      fr: 'Aucun', en: 'None', price: 0 },
+    { id: 'p90',        name: 'P90',            price: 100 },
+    { id: 'dynasonic',  name: 'Dynasonic',      price: 290 },
+    { id: 'paf',        name: 'PAF',            price: 100 },
+    { id: 'mini',       name: 'Mini Humbucker', price: 100 },
+    { id: 'fullbucker', name: 'Fullbucker',     price: 100 },
+    { id: 'goldfoils',  name: 'Gold Foils',     price: 110 },
+  ];
+  const BRIDGE = [
+    { id: 'fullbucker', name: 'Fullbucker',     price: 0 },
+    { id: 'p90',        name: 'P90',            price: 0 },
+    { id: 'dynasonic',  name: 'Dynasonic',      price: 90 },
+    { id: 'paf',        name: 'PAF',            price: 0 },
+    { id: 'mini',       name: 'Mini Humbucker', price: 0 },
+    { id: 'goldfoils',  name: 'Gold Foils',     price: 110 },
+  ];
+  const HARDWARE = [
+    { id: 'laiton', fr: 'Laiton Fauve', en: 'Fauve brass', price: 0, crop: true },
+    { id: 'halon',  fr: 'Vibrato exclusif Halon', en: 'Exclusive Halon vibrato', price: 120 },
+  ];
+  const HANDS = [
+    { id: 'd', fr: 'Droitier', en: 'Right-handed' },
+    { id: 'g', fr: 'Gaucher',  en: 'Left-handed' },
+  ];
+  const WIRING = {
+    one: { fr: '1 volume, 1 tonalité, Bypass', en: '1 volume, 1 tone, bypass' },
+    two: { fr: 'Sélecteur 3 positions, 1 volume, 1 tonalité, Bypass', en: '3-way selector, 1 volume, 1 tone, bypass' },
+  };
+
+  const T = {
+    fr: {
+      title: 'Démo configurateur La Féline · bitmaker',
+      strip: 'Démo bitmaker · Site non officiel',
+      aboutBtn: 'À propos de cette démo',
+      crumb: 'Démo pour Berg Guitares',
+      eyebrow: 'Naturally Rock · Fabriquée en France',
+      lede: 'Corps en épicéa français torréfié, manche en érable, touche en noyer. Peintures et vernis 100 % naturels.',
+      color: 'Couleur', pickguard: 'Pickguard', pickups: 'Micros', neck: 'Micro manche', bridge: 'Micro chevalet',
+      hardware: 'Accastillage', hand: 'Orientation', summary: 'Votre Féline', wiring: 'Câblage', wiringNote: 'déduit des micros',
+      total: 'Total', priceNote: 'Prix repris de la boutique en ligne', share: 'Partager', order: 'Voir la boutique ↗',
+      viewFull: 'Guitare entière', viewDetail: 'Détail',
+      tagComp: 'Composition par calques', tagMirror: 'Aperçu miroir', tagVibrato: 'Vibrato non représenté',
+      puNote: 'Visuel indicatif : le même micro illustre tous les modèles.',
+      missingTitle: 'Pas encore de photo',
+      missingText: 'La teinte Naturelle Ambrée n’a pas de visuel en ligne. Une seule photo suffit pour l’ajouter.',
+      included: 'inclus', none: 'aucun', neckShort: 'manche', bridgeShort: 'chevalet', toCome: 'Visuel à venir',
+      copied: 'Lien de cette configuration copié.',
+      loadError: 'Impossible de charger les photos depuis berg-guitares.com.',
+      aboutTitle: 'À propos de cette démo',
+      about: [
+        'Construit uniquement à partir des 21 photos de La Féline déjà en ligne sur la boutique.',
+        'Les photos « 1 micro » et « 2 micros » viennent de deux prises de vue. Le micro manche et le sélecteur sont recomposés par calques : chaque couleur s’affiche dans les deux versions.',
+        'Les prix reprennent les suppléments actuels de la boutique. Le câblage se déduit du nombre de micros, au lieu de deux champs à remplir.',
+        'Pour un rendu complet il manque : une photo de la teinte Naturelle Ambrée, une photo de chaque modèle de micro, le vibrato Halon et une vraie vue gaucher.',
+        'Ce module peut se greffer sur la fiche produit WooCommerce existante et remplir le formulaire d’options à la place du client.',
+      ],
+      aboutFine: 'Démo réalisée par bitmaker, ce n’est pas un site officiel. Rien ne peut être commandé ici. Photos, nom et logo © Berg Guitares.',
+      close: 'Fermer',
+    },
+    en: {
+      title: 'La Féline configurator demo · bitmaker',
+      strip: 'bitmaker demo · Unofficial site',
+      aboutBtn: 'About this demo',
+      crumb: 'Demo for Berg Guitares',
+      eyebrow: 'Naturally Rock · Made in France',
+      lede: 'Roasted French spruce body, maple neck, walnut fretboard. 100% natural paints and varnishes.',
+      color: 'Colour', pickguard: 'Pickguard', pickups: 'Pickups', neck: 'Neck pickup', bridge: 'Bridge pickup',
+      hardware: 'Hardware', hand: 'Orientation', summary: 'Your Féline', wiring: 'Wiring', wiringNote: 'set by your pickups',
+      total: 'Total', priceNote: 'Prices from the online shop', share: 'Share', order: 'See the shop ↗',
+      viewFull: 'Full guitar', viewDetail: 'Close-up',
+      tagComp: 'Layered composite', tagMirror: 'Mirrored preview', tagVibrato: 'Vibrato not shown',
+      puNote: 'Indicative visual: the same pickup stands in for every model.',
+      missingTitle: 'No photo yet',
+      missingText: 'There is no picture of the Naturelle Ambrée finish online yet. One photo is all it takes to add it.',
+      included: 'included', none: 'none', neckShort: 'neck', bridgeShort: 'bridge', toCome: 'Visual coming',
+      copied: 'Link to this configuration copied.',
+      loadError: 'Could not load the photos from berg-guitares.com.',
+      aboutTitle: 'About this prototype',
+      about: [
+        'Built only from the 21 photos of La Féline already published in the shop.',
+        'The one-pickup and two-pickup photos come from two different shoots. The neck pickup and selector switch are layered in, so every colour shows in both versions.',
+        'Prices use the shop’s current surcharges. Wiring follows from the number of pickups instead of two separate fields.',
+        'Still needed for a complete render: a photo of the Naturelle Ambrée finish, one photo of each pickup model, the Halon vibrato and a true left-handed view.',
+        'This module can plug into the existing WooCommerce product page and fill in the options form for the customer.',
+      ],
+      aboutFine: 'Demo made by bitmaker, not an official site. Nothing can be ordered here. Photos, name and logo © Berg Guitares.',
+      close: 'Close',
+    },
+  };
+
+  const DEFAULT = { color: 'vert-oxygene', pg: 'w', neck: 'aucun', bridge: 'fullbucker', hw: 'laiton', hand: 'd', view: 'full', lang: 'fr' };
+  const CHOICES = {
+    color: COLORS, pg: PICKGUARDS, neck: NECK, bridge: BRIDGE, hw: HARDWARE, hand: HANDS,
+    view: [{ id: 'full' }, { id: 'detail' }], lang: [{ id: 'fr' }, { id: 'en' }],
+  };
+
+  const $ = s => document.querySelector(s);
+  const byId = (list, id) => list.find(o => o.id === id);
+  const label = (o, lang) => o.name || o[lang];
+
+  const state = readHash();
+
+  function readHash() {
+    const s = { ...DEFAULT };
+    const p = new URLSearchParams(location.hash.slice(1));
+    for (const k of Object.keys(DEFAULT)) {
+      const v = p.get(k);
+      if (v && byId(CHOICES[k], v)) s[k] = v;
+    }
+    return s;
+  }
+  function writeHash() {
+    history.replaceState(null, '', '#' + new URLSearchParams(state).toString());
+  }
+
+  function money(n, lang, signed) {
+    const f = new Intl.NumberFormat(lang === 'en' ? 'en-GB' : 'fr-FR', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 });
+    return (signed ? '+' : '') + f.format(n).replace(/ | /g, ' ');
+  }
+  const total = () => BASE_PRICE + byId(NECK, state.neck).price + byId(BRIDGE, state.bridge).price + byId(HARDWARE, state.hw).price;
+  const wiring = () => WIRING[state.neck === 'aucun' ? 'one' : 'two'];
+
+  /* ---------- Options ---------- */
+
+  function radio(name, o, checked) {
+    const text = label(o, state.lang).replace(/"/g, '&quot;');
+    return `<input type="radio" name="${name}" value="${o.id}" aria-label="${text}"${checked ? ' checked' : ''}>`;
+  }
+  function deltaText(price, lang) {
+    return price ? money(price, lang, true) : T[lang].included;
+  }
+
+  function buildOptions() {
+    const L = state.lang;
+    $('#optColor').innerHTML = COLORS.map(c => `
+      <label class="opt swatch${c.photos ? '' : ' nophoto'}" title="${c.name}">
+        ${radio('color', c, c.id === state.color)}
+        <span class="face" style="--c:${c.hex}" aria-hidden="true"></span>
+      </label>`).join('');
+
+    $('#optPg').innerHTML = PICKGUARDS.map(o => `
+      <label class="opt card">
+        ${radio('pg', o, o.id === state.pg)}
+        <span class="face">
+          <span class="thumb" style="background-image:url('${o.img}')"></span>
+          <span class="txt"><span class="name">${o[L]}</span><span class="delta">${T[L].included}</span></span>
+        </span>
+      </label>`).join('');
+
+    const chip = (name, list) => list.map(o => `
+      <label class="opt chip">
+        ${radio(name, o, o.id === state[name])}
+        <span class="face">${label(o, L)}<span class="delta">${o.price ? money(o.price, L, true) : ''}</span></span>
+      </label>`).join('');
+    $('#optNeck').innerHTML = chip('neck', NECK);
+    $('#optBridge').innerHTML = chip('bridge', BRIDGE);
+
+    // Vignette laiton : recadrage du chevalet (centré vers 481 × 1246) sur une photo de la boutique
+    const s = 0.4;
+    const brass = `background-image:url('${IMG}feline-noir-espace_pgbk_WEB.jpg');background-size:${W * s}px ${H * s}px;background-position:${26 - 481 * s}px ${26 - 1246 * s}px`;
+    $('#optHw').innerHTML = HARDWARE.map(o => `
+      <label class="opt card">
+        ${radio('hw', o, o.id === state.hw)}
+        <span class="face">
+          ${o.crop ? `<span class="thumb" style="${brass}"></span>` : `<span class="thumb placeholder">${T[L].toCome}</span>`}
+          <span class="txt"><span class="name">${o[L]}</span><span class="delta">${deltaText(o.price, L)}</span></span>
+        </span>
+      </label>`).join('');
+
+    $('#optHand').innerHTML = HANDS.map(o => `
+      <label class="opt">
+        ${radio('hand', o, o.id === state.hand)}
+        <span class="face">${o[L]}</span>
+      </label>`).join('');
+  }
+
+  function applyText() {
+    const t = T[state.lang];
+    document.documentElement.lang = state.lang;
+    document.title = t.title;
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const v = t[el.dataset.i18n];
+      if (typeof v === 'string') el.textContent = v;
+    });
+    $('#aboutList').innerHTML = t.about.map((s, i) => `<li><b>${i + 1}</b><span>${s}</span></li>`).join('');
+    document.querySelectorAll('.lang button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
+  }
+
+  function updateText() {
+    const L = state.lang, t = T[L];
+    const color = byId(COLORS, state.color), pg = byId(PICKGUARDS, state.pg);
+    const neck = byId(NECK, state.neck), bridge = byId(BRIDGE, state.bridge);
+    const hw = byId(HARDWARE, state.hw), hand = byId(HANDS, state.hand);
+
+    $('#valColor').textContent = color.name;
+    $('#valPg').textContent = pg[L];
+    $('#valPu').textContent = state.neck === 'aucun' ? '1' : '2';
+    $('#valHw').textContent = hw[L];
+    $('#valHand').textContent = hand[L];
+    $('#capColor').textContent = `${color.name} · pickguard ${pg[L].toLowerCase()}`;
+
+    const pickups = state.neck === 'aucun'
+      ? `${bridge.name} <small>${t.bridgeShort}</small>`
+      : `${neck.name} <small>${t.neckShort}</small>${bridge.name} <small>${t.bridgeShort}</small>`;
+    const rows = [
+      [t.color, color.name],
+      [t.pickguard, pg[L]],
+      [t.pickups, pickups],
+      [t.hardware, hw[L]],
+      [t.wiring, `${wiring()[L]} <small>${t.wiringNote}</small>`],
+      [t.hand, hand[L]],
+    ];
+    $('#summary').innerHTML = rows.map(([k, v]) => `<dt>${k}</dt><dd>${v}</dd>`).join('');
+
+    document.querySelectorAll('.views button').forEach(b => b.setAttribute('aria-pressed', String(b.dataset.view === state.view)));
+    animatePrice(total());
+  }
+
+  let shownPrice = null, priceRaf = 0;
+  function animatePrice(to) {
+    const out = $('#price');
+    if (shownPrice === null || matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      shownPrice = to; out.textContent = money(to, state.lang); return;
+    }
+    const from = shownPrice, t0 = performance.now(), dur = 320;
+    cancelAnimationFrame(priceRaf);
+    const step = now => {
+      const k = Math.min(1, (now - t0) / dur), e = 1 - Math.pow(1 - k, 3);
+      shownPrice = Math.round(from + (to - from) * e);
+      out.textContent = money(shownPrice, state.lang);
+      if (k < 1) priceRaf = requestAnimationFrame(step);
+    };
+    priceRaf = requestAnimationFrame(step);
+  }
+
+  /* ---------- Rendu de la guitare ---------- */
+
+  const cache = new Map();
+  function load(key) {
+    if (!cache.has(key)) {
+      cache.set(key, new Promise((resolve, reject) => {
+        const img = new Image();
+        img.decoding = 'async';
+        img.onload = () => resolve(img);
+        img.onerror = () => { cache.delete(key); reject(new Error(key)); };
+        img.src = `${IMG}feline-${key}_WEB.jpg`;
+      }));
+    }
+    return cache.get(key);
+  }
+
+  function canvas(w, h) {
+    const c = document.createElement('canvas');
+    c.width = w; c.height = h;
+    return c;
+  }
+  function roundRect(ctx, x, y, w, h, r) {
+    ctx.beginPath();
+    ctx.moveTo(x + r, y);
+    ctx.arcTo(x + w, y, x + w, y + h, r);
+    ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r);
+    ctx.arcTo(x, y, x + w, y, r);
+    ctx.closePath();
+  }
+
+  // Masque adouci : on dessine hors-champ et on ne garde que l'ombre floutée, compatible avec tous les navigateurs
+  const mask = (() => {
+    const c = canvas(W, H), x = c.getContext('2d'), off = W * 2;
+    x.fillStyle = x.shadowColor = '#fff';
+    x.shadowBlur = FEATHER;
+    x.shadowOffsetX = off;
+    for (const p of PATCHES) { roundRect(x, p.x - off, p.y, p.w, p.h, p.r); x.fill(); }
+    return c;
+  })();
+  const logoMask = (() => {
+    const c = canvas(W, H), x = c.getContext('2d'), off = W * 2;
+    x.fillStyle = x.shadowColor = '#fff';
+    x.shadowBlur = LOGO.feather;
+    x.shadowOffsetX = off;
+    x.translate(LOGO.x - off, LOGO.y);
+    x.rotate(LOGO.angle);
+    x.beginPath();
+    for (const [u, v] of LOGO.outline) x.lineTo(u, v);
+    x.closePath();
+    x.fill();
+    return c;
+  })();
+  const full = canvas(W, H), fctx = full.getContext('2d');
+  const layer = canvas(W, H), lctx = layer.getContext('2d');
+
+  // Le miroir gaucher retourne aussi le logo : on le retourne une seconde fois le long de sa ligne de base
+  function straightenLogo(base) {
+    const shift = base.includes('_2mic_') ? LOGO.shift : 0, x = LOGO.x - shift;
+    lctx.clearRect(0, 0, W, H);
+    lctx.save();
+    lctx.translate(x, LOGO.y);
+    lctx.rotate(LOGO.angle);
+    lctx.scale(-1, 1);
+    lctx.rotate(-LOGO.angle);
+    lctx.translate(-x, -LOGO.y);
+    lctx.drawImage(full, 0, 0);
+    lctx.restore();
+    lctx.globalCompositeOperation = 'destination-in';
+    lctx.drawImage(logoMask, -shift, 0);
+    lctx.globalCompositeOperation = 'source-over';
+    fctx.drawImage(layer, 0, 0);
+  }
+
+  function plan(s) {
+    const want = s.neck === 'aucun' ? 1 : 2;
+    const color = byId(COLORS, s.color);
+    if (!color.photos) return { ...plan({ ...s, color: 'blanc-voodoo' }), missing: true };
+    const exact = color.photos[want] && color.photos[want][s.pg];
+    if (exact) return { base: exact };
+    const have = want === 1 ? 2 : 1;
+    return { base: color.photos[have][s.pg], donor: DONORS[want][s.pg], dx: want === 2 ? SHIFT : -SHIFT };
+  }
+
+  const cvs = [$('#cvA'), $('#cvB')];
+  let front = null, token = 0, loaderTimer = 0;
+
+  async function render() {
+    const my = ++token;
+    const p = plan(state);
+    clearTimeout(loaderTimer);
+    loaderTimer = setTimeout(() => { $('#loader').hidden = false; }, 160);
+    let base, donor;
+    try {
+      [base, donor] = await Promise.all([load(p.base), p.donor ? load(p.donor) : null]);
+    } catch (e) {
+      clearTimeout(loaderTimer); $('#loader').hidden = true;
+      toast(T[state.lang].loadError);
+      return;
+    }
+    if (my !== token) return;
+    clearTimeout(loaderTimer); $('#loader').hidden = true;
+
+    fctx.clearRect(0, 0, W, H);
+    fctx.drawImage(base, 0, 0, W, H);
+    if (donor) {
+      lctx.globalCompositeOperation = 'source-over';
+      lctx.clearRect(0, 0, W, H);
+      lctx.drawImage(donor, p.dx, 0, W, H);
+      lctx.globalCompositeOperation = 'destination-in';
+      lctx.drawImage(mask, 0, 0);
+      lctx.globalCompositeOperation = 'source-over';
+      fctx.drawImage(layer, 0, 0);
+    }
+    if (state.hand === 'g') straightenLogo(p.base);
+
+    const v = VIEWS[state.view];
+    const next = cvs.find(c => c !== front);
+    next.width = v.w; next.height = v.h;
+    const ctx = next.getContext('2d');
+    ctx.save();
+    if (state.hand === 'g') { ctx.translate(v.w, 0); ctx.scale(-1, 1); }
+    ctx.drawImage(full, v.x, v.y, v.w, v.h, 0, 0, v.w, v.h);
+    ctx.restore();
+    next.setAttribute('aria-label', `La Féline, ${byId(COLORS, state.color).name}`);
+
+    next.style.zIndex = 2;
+    if (front) front.style.zIndex = 1;
+    next.classList.add('on');
+    const old = front;
+    front = next;
+    if (old) setTimeout(() => { if (old !== front) old.classList.remove('on'); }, 420);
+
+    $('#frame').classList.toggle('is-detail', state.view === 'detail');
+    $('.stage').classList.toggle('is-detail', state.view === 'detail');
+    $('#frame').classList.toggle('is-missing', !!p.missing);
+    $('#missing').hidden = !p.missing;
+    $('#tagComp').hidden = !p.donor || !!p.missing;
+    $('#tagMirror').hidden = state.hand !== 'g';
+    $('#tagVibrato').hidden = state.hw !== 'halon';
+  }
+
+  function prefetch() {
+    const keys = new Set();
+    for (const c of COLORS) if (c.photos) for (const set of Object.values(c.photos)) for (const k of Object.values(set)) keys.add(k);
+    const queue = [...keys];
+    const nextOne = () => { const k = queue.shift(); if (k) load(k).catch(() => {}).finally(nextOne); };
+    (window.requestIdleCallback || (f => setTimeout(f, 600)))(nextOne);
+  }
+
+  /* ---------- Interactions ---------- */
+
+  let toastTimer = 0;
+  function toast(html, ms = 3200) {
+    const el = $('#toast');
+    el.innerHTML = html;
+    el.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove('show'), ms);
+  }
+
+  $('#cfg').addEventListener('change', e => {
+    const { name, value } = e.target;
+    if (!(name in state)) return;
+    state[name] = value;
+    writeHash();
+    updateText();
+    render();
+  });
+
+  document.querySelectorAll('.views button').forEach(b => b.addEventListener('click', () => {
+    if (state.view === b.dataset.view) return;
+    state.view = b.dataset.view;
+    writeHash(); updateText(); render();
+  }));
+
+  document.querySelectorAll('.lang button').forEach(b => b.addEventListener('click', () => {
+    if (state.lang === b.dataset.lang) return;
+    state.lang = b.dataset.lang;
+    writeHash(); applyText(); buildOptions(); updateText();
+  }));
+
+  $('#shareBtn').addEventListener('click', async () => {
+    const url = location.href;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      const ta = Object.assign(document.createElement('textarea'), { value: url });
+      document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove();
+    }
+    toast(T[state.lang].copied, 2200);
+  });
+
+
+  $('#aboutBtn').addEventListener('click', () => $('#about').showModal());
+
+  window.addEventListener('hashchange', () => {
+    Object.assign(state, readHash());
+    applyText(); buildOptions(); updateText(); render();
+  });
+
+  applyText();
+  buildOptions();
+  updateText();
+  render().then(prefetch);
+})();
+</script>
+</body>
+</html>
