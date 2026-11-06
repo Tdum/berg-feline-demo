@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Démo configurateur La Féline · bitmaker</title>
-<meta name="description" content="Démo de configurateur réalisée par bitmaker pour La Féline de Berg Guitares. Ce n’est pas un site officiel.">
+<title>Démo configurateur La Féline</title>
+<meta name="description" content="Démo de configurateur pour La Féline de Berg Guitares. Ce n’est pas un site officiel.">
 <meta name="robots" content="noindex, nofollow">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&family=Syne:wght@800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap" rel="stylesheet">
 <link rel="preload" as="image" href="https://www.berg-guitares.com/wp-content/uploads/2022/09/feline-vert-oxygen_pgw_WEB.jpg">
 <style>
 :root{
@@ -66,11 +66,8 @@ img{display:block}
   border-bottom:1px solid var(--line);
   background:var(--cream);
 }
-.brand{font:800 18px/1 "Syne",sans-serif;letter-spacing:-.02em;color:var(--ink,#1a1612);text-decoration:none}
-.brand span{color:#c45a3b}
 .crumb{
   font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);
-  padding-left:18px;border-left:1px solid var(--line);
 }
 .lang{margin-left:auto;display:flex;border:1px solid var(--line);border-radius:999px;padding:3px}
 .lang button{
@@ -338,8 +335,6 @@ dialog form{margin:18px 0 0;display:flex;justify-content:flex-end}
   :root{--head-h:56px}
   .strip{justify-content:space-between}
   .top{padding:0 16px;gap:12px}
-  .brand{font-size:16px}
-  .crumb{padding-left:12px}
   .app{display:block;height:auto}
   .stage{position:sticky;top:0;height:46svh;z-index:5}
   .frame{inset:10px 10px 58px}
@@ -356,7 +351,6 @@ dialog form{margin:18px 0 0;display:flex;justify-content:flex-end}
   .btn{padding:11px 14px}
 }
 @media (max-width:420px){
-  .crumb{display:none}
   .cards{grid-template-columns:1fr}
   #shareBtn .t{display:none}
 }
@@ -368,12 +362,11 @@ dialog form{margin:18px 0 0;display:flex;justify-content:flex-end}
 <body>
 
 <div class="strip">
-  <span data-i18n="strip">Démo bitmaker · Site non officiel</span>
+  <span data-i18n="strip">Démo · Site non officiel</span>
   <button type="button" id="aboutBtn" data-i18n="aboutBtn">À propos de cette démo</button>
 </div>
 
 <header class="top">
-  <a class="brand" href="https://bitmaker.fr" target="_blank" rel="noopener">bitmaker<span>_</span></a>
   <span class="crumb" data-i18n="crumb">Démo pour Berg Guitares</span>
   <div class="lang" role="group" aria-label="Langue / Language">
     <button type="button" data-lang="fr" aria-pressed="true">FR</button>
@@ -558,8 +551,8 @@ dialog form{margin:18px 0 0;display:flex;justify-content:flex-end}
 
   const T = {
     fr: {
-      title: 'Démo configurateur La Féline · bitmaker',
-      strip: 'Démo bitmaker · Site non officiel',
+      title: 'Démo configurateur La Féline',
+      strip: 'Démo · Site non officiel',
       aboutBtn: 'À propos de cette démo',
       crumb: 'Démo pour Berg Guitares',
       eyebrow: 'Naturally Rock · Fabriquée en France',
@@ -583,12 +576,12 @@ dialog form{margin:18px 0 0;display:flex;justify-content:flex-end}
         'Pour un rendu complet il manque : une photo de la teinte Naturelle Ambrée, une photo de chaque modèle de micro, le vibrato Halon et une vraie vue gaucher.',
         'Ce module peut se greffer sur la fiche produit WooCommerce existante et remplir le formulaire d’options à la place du client.',
       ],
-      aboutFine: 'Démo réalisée par bitmaker, ce n’est pas un site officiel. Rien ne peut être commandé ici. Photos, nom et logo © Berg Guitares.',
+      aboutFine: 'Ce n’est pas un site officiel. Rien ne peut être commandé ici. Photos, nom et logo © Berg Guitares.',
       close: 'Fermer',
     },
     en: {
-      title: 'La Féline configurator demo · bitmaker',
-      strip: 'bitmaker demo · Unofficial site',
+      title: 'La Féline configurator demo',
+      strip: 'Demo · Unofficial site',
       aboutBtn: 'About this demo',
       crumb: 'Demo for Berg Guitares',
       eyebrow: 'Naturally Rock · Made in France',
@@ -612,7 +605,7 @@ dialog form{margin:18px 0 0;display:flex;justify-content:flex-end}
         'Still needed for a complete render: a photo of the Naturelle Ambrée finish, one photo of each pickup model, the Halon vibrato and a true left-handed view.',
         'This module can plug into the existing WooCommerce product page and fill in the options form for the customer.',
       ],
-      aboutFine: 'Demo made by bitmaker, not an official site. Nothing can be ordered here. Photos, name and logo © Berg Guitares.',
+      aboutFine: 'Not an official site. Nothing can be ordered here. Photos, name and logo © Berg Guitares.',
       close: 'Close',
     },
   };
